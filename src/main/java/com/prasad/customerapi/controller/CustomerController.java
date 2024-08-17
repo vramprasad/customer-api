@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -30,34 +32,41 @@ public class CustomerController {
 
     @GetMapping("/listAll")
     public List<Customer> getAllCustomers() {
+        log.info("Inside CustomerController --> getAllCustomers");
         return customerRepository.findAll();
     }
 
-//    @GetMapping("/{id}")
-//    public Client getClient(@PathVariable Long id) {
-//        return clientRepository.findById(id).orElseThrow(RuntimeException::new);
-//    }
-//
-//    @PostMapping
-//    public ResponseEntity createClient(@RequestBody Client client) throws URISyntaxException {
-//        Client savedClient = clientRepository.save(client);
-//        return ResponseEntity.created(new URI("/clients/" + savedClient.getId())).body(savedClient);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity updateClient(@PathVariable Long id, @RequestBody Client client) {
-//        Client currentClient = clientRepository.findById(id).orElseThrow(RuntimeException::new);
-//        currentClient.setName(client.getName());
-//        currentClient.setEmail(client.getEmail());
-//        currentClient = clientRepository.save(client);
-//
-//        return ResponseEntity.ok(currentClient);
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity deleteClient(@PathVariable Long id) {
-//        clientRepository.deleteById(id);
-//        return ResponseEntity.ok().build();
-//    }
+    @GetMapping("/{id}")
+    public Customer getCustomer(@PathVariable Long id) {
+        log.info("Inside CustomerController --> getCustomer");
+        return customerRepository.findById(id).orElseThrow(RuntimeException::new);
+    }
+
+    @PostMapping("/addCustomer")
+    public ResponseEntity createCustomer(@RequestBody Customer customer) throws URISyntaxException {
+        log.info("Inside CustomerController --> createCustomer");
+        Customer savedCustomer = customerRepository.save(customer);
+        return ResponseEntity.ok(savedCustomer);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+        log.info("Inside CustomerController --> updateCustomer");
+        Customer savedCustomer = customerRepository.findById(id).orElseThrow(RuntimeException::new);
+        log.info("Request customer : "+ customer.toString());
+        log.info("From DB : "+ savedCustomer.toString());
+        savedCustomer.setCustEmail(customer.getCustEmail());
+        savedCustomer.setCustName(customer.getCustName());
+        customerRepository.save(savedCustomer);
+        log.info("Customer ID : "+ savedCustomer.getId() + " updated with new details");
+        return ResponseEntity.ok(savedCustomer);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteCustomer(@PathVariable Long id) {
+        log.info("Inside CustomerController --> deleteCustomer");
+        customerRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 
 }
